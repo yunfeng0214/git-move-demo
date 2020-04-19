@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="./vue.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    #app .box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background-color: pink;
+    }
+
+    #app .box .item {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      text-align: center;
+      line-height: 50px;
+      cursor: move;
+      background-color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="box" @mousedown="down" ref="box">
+      <div class="item" :key="val.id" v-for="val in list" :flag="val.id"
+        :style="num === val.id ? {left: moveX, top: moveY} : {left: val.positionX, top: val.positionY}">
+      </div>
+    </div>
+  </div>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        list: [{
+          id: 1,
+          positionX: 0,
+          positionY: 0
+        }, {
+          id: 2,
+          positionX: 0,
+          positionY: 0
+        }, {
+          id: 3,
+          positionX: 0,
+          positionY: 0
+        }],
+        itemX: null,
+        itemY: null,
+        num: null,
+        moveX: null,
+        moveY: null
+      },
+      methods: {
+        move(e) {
+          let res = this.list.find(item => item.id === this.num)
+          this.moveX = res.positionX = e.pageX - this.itemX + 'px'
+          this.moveY = res.positionY = e.pageY - this.itemY + 'px'
+        },
+        down(e) {
+          this.num = Number(e.target.getAttribute('flag'))
+          // 鼠标按下时获得鼠标在盒子内的坐标
+          this.itemX = e.pageX - e.target.offsetLeft
+          this.itemY = e.pageY - e.target.offsetTop
+          this.$refs.box.addEventListener('mousemove', this.move)
+          this.$refs.box.addEventListener('mouseup', () => {
+            this.$refs.box.removeEventListener('mousemove', this.move)
+          })
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
